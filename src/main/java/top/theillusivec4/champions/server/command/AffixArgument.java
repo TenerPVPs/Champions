@@ -10,7 +10,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import top.theillusivec4.champions.Champions;
 import top.theillusivec4.champions.api.IAffix;
 import top.theillusivec4.champions.server.command.AffixArgument.IAffixProvider;
@@ -19,7 +19,7 @@ public class AffixArgument implements ArgumentType<IAffixProvider> {
 
   private static final Collection<String> EXAMPLES = Arrays.asList("molten", "reflecting");
   private static final DynamicCommandExceptionType UNKNOWN_AFFIX = new DynamicCommandExceptionType(
-      type -> new TranslatableComponent("argument.champions.affix.unknown", type));
+      type -> Component.translatable("argument.champions.affix.unknown", type));
 
   public static AffixArgument affix() {
     return new AffixArgument();

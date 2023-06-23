@@ -13,7 +13,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.nbt.TagParser;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import top.theillusivec4.champions.api.IAffix;
 import top.theillusivec4.champions.api.IChampion;
@@ -25,7 +25,7 @@ public class ChampionSelectorOptions {
   public static void setup() {
     EntitySelectorOptions.register("champions", ChampionSelectorOptions::championsArgument,
       entitySelectorParser -> true,
-      new TranslatableComponent("argument.entity.options.champions.description"));
+      Component.translatable("argument.entity.options.champions.description"));
   }
 
   private static void championsArgument(EntitySelectorParser parser) throws CommandSyntaxException {

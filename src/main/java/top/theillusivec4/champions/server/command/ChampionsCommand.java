@@ -18,7 +18,7 @@ import net.minecraft.commands.arguments.EntitySummonArgument;
 import net.minecraft.commands.arguments.coordinates.BlockPosArgument;
 import net.minecraft.commands.synchronization.SuggestionProviders;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -50,15 +50,15 @@ public class ChampionsCommand {
   public static final SuggestionProvider<CommandSourceStack> MONSTER_ENTITIES = SuggestionProviders
       .register(new ResourceLocation(Champions.MODID, "monster_entities"),
           (context, builder) -> SharedSuggestionProvider.suggestResource(
-              ForgeRegistries.ENTITIES.getValues().stream()
+              ForgeRegistries.ENTITY_TYPES.getValues().stream()
                   .filter(type -> type.getCategory() == MobCategory.MONSTER),
               builder, EntityType::getKey,
-              (type) -> new TranslatableComponent(
-                  Util.makeDescriptionId("entity", EntityType.getKey(type)))));
+              (type) -> Component.translatable(
+                Util.makeDescriptionId("entity", EntityType.getKey(type)))));
 
 
   private static final DynamicCommandExceptionType UNKNOWN_ENTITY = new DynamicCommandExceptionType(
-      type -> new TranslatableComponent("command.champions.egg.unknown_entity", type));
+      type -> Component.translatable("command.champions.egg.unknown_entity", type));
 
   public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
     final int opPermissionLevel = 2;
@@ -116,7 +116,7 @@ public class ChampionsCommand {
   private static int summon(CommandSourceStack source, @Nullable BlockPos pos,
                             ResourceLocation resourceLocation, int tier, Collection<IAffix> affixes)
       throws CommandSyntaxException {
-    EntityType<?> entityType = ForgeRegistries.ENTITIES.getValue(resourceLocation);
+    EntityType<?> entityType = ForgeRegistries.ENTITY_TYPES.getValue(resourceLocation);
 
 
     if (entityType == null) {
@@ -133,8 +133,8 @@ public class ChampionsCommand {
           ChampionCapability.getCapability(entity).ifPresent(
               champion -> ChampionBuilder.spawnPreset(champion, tier, new ArrayList<>(affixes)));
           source.getLevel().addFreshEntity(entity);
-          source.sendSuccess(new TranslatableComponent("commands.champions.summon.success",
-              new TranslatableComponent("rank.champions.title." + tier).getString() + " " + entity
+          source.sendSuccess(Component.translatable("commands.champions.summon.success",
+            Component.translatable("rank.champions.title." + tier).getString() + " " + entity
                   .getDisplayName().getString()), false);
         }
       }
@@ -146,7 +146,7 @@ public class ChampionsCommand {
   private static int createEgg(CommandSourceStack source, ResourceLocation resourceLocation,
                                int tier,
                                Collection<IAffix> affixes) throws CommandSyntaxException {
-    EntityType<?> entity = ForgeRegistries.ENTITIES.getValue(resourceLocation);
+    EntityType<?> entity = ForgeRegistries.ENTITY_TYPES.getValue(resourceLocation);
 
     if (entity == null) {
       throw UNKNOWN_ENTITY.create(resourceLocation);
@@ -155,7 +155,7 @@ public class ChampionsCommand {
       ChampionEggItem.write(egg, resourceLocation, tier, affixes);
       ItemHandlerHelper.giveItemToPlayer(playerEntity, egg, 1);
       source.sendSuccess(
-          new TranslatableComponent("commands.champions.egg.success", egg.getDisplayName()), false);
+        Component.translatable("commands.champions.egg.success", egg.getDisplayName()), false);
     }
     return Command.SINGLE_SUCCESS;
   }
