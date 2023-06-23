@@ -196,42 +196,45 @@ public class ChampionEventsHandler {
     if (livingEntity.getLevel().isClientSide()) {
       return;
     }
-    ChampionCapability.getCapability(livingEntity).ifPresent(champion -> {
-      IChampion.Server serverChampion = champion.getServer();
-      serverChampion.getAffixes().forEach(affix -> {
 
-        if (!affix.onDeath(champion, evt.getSource())) {
-          evt.setCanceled(true);
-        }
-      });
-      serverChampion.getRank().ifPresent(rank -> {
-        if (!evt.isCanceled()) {
-          Entity source = evt.getSource().getEntity();
+    livingEntity.getCapability(ChampionCapability.CHAMPION_CAP).ifPresent(iChampion -> {
+        IChampion.Server serverChampion = iChampion.getServer();
 
-          if (source instanceof ServerPlayer player && !(source instanceof FakePlayer)) {
-            player.awardStat(ChampionsStats.CHAMPION_MOBS_KILLED);
-            int messageTier = ChampionsConfig.deathMessageTier;
+        serverChampion.getAffixes().forEach(affix -> {
+          if (!affix.onDeath(iChampion, evt.getSource())) {
+            evt.setCanceled(true);
+          }
+        });
 
-            if (messageTier > 0 && rank.getTier() >= messageTier) {
-              MinecraftServer server = livingEntity.getServer();
+       serverChampion.getRank().ifPresent(rank -> {
+         if (!evt.isCanceled()) {
+           Entity source = evt.getSource().getEntity();
 
-              if (server != null) {
-                server.getPlayerList().broadcastSystemMessage(Component.translatable("rank.champions.title." + rank.getTier())
-                  .append(" ")
-                  .append(livingEntity.getCombatTracker().getDeathMessage()),false);
+           if (source instanceof ServerPlayer player && !(source instanceof FakePlayer)) {
+             player.awardStat(ChampionsStats.CHAMPION_MOBS_KILLED);
+             int messageTier = ChampionsConfig.deathMessageTier;
 
-                /* old idk if its correctly
+             if (messageTier > 0 && rank.getTier() >= messageTier) {
+               MinecraftServer server = livingEntity.getServer();
+
+               if (server != null) {
+                 server.getPlayerList().broadcastSystemMessage(Component.translatable("rank.champions.title." + rank.getTier())
+                   .append(" ")
+                   .append(livingEntity.getCombatTracker().getDeathMessage()),false);
+
+                /* old IDK if its correctly
                 server.getPlayerList().broadcastMessage(
                   Component.translatable("rank.champions.title." + rank.getTier())
                     .append(" ")
                     .append(livingEntity.getCombatTracker().getDeathMessage()),
                   ChatType.CHAT, Util.NIL_UUID);
                 */
-              }
-            }
-          }
-        }
-      });
+               }
+             }
+           }
+         }
+       });
+
     });
   }
 
